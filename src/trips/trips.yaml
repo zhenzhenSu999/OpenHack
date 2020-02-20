@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      containers:
+      - name: trips
+        image: registryjjw5841.azurecr.io/tripinsights/trips:1.0
+        imagePullPolicy: Always
+        env:
+          - name: SQL_USER
+            value: "sqladminrP57825"
+          - name: SQL_PASSWORD
+            value: "dI1kh5Ql9"
+          - name: SQL_SERVER
+            value: "sqlserverrp57825.database.windows.net"
+          - name: SQL_DBNAME
+            value: "mydrivingDB"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+            memory: 64Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: trips-service
+  spec:
+    selector:
+      app: trips
+    ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 80
